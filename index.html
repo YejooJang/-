@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0">
+    <title>사회복지실무역량</title>
+    <!-- 아이콘 표시용 FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* "snooze-wallpaper---pc.jpg" 일러스트 기반 파스텔 그린&스카이 컬러 변수 */
+        :root {
+            --bg-main: #e2f0ed;       /* 이미지 상단의 맑고 부드러운 파스텔 하늘·민트빛 */
+            --card-bg: #fbfbf6;       /* 일러스트 속 구름과 양을 닮은 따뜻한 크림 화이트 */
+            --main-green: #90b89d;    /* 먼 산과 나무를 닮은 차분한 파스텔 톤 연두색 */
+            --point-green: #679275;   /* 풀밭 테두리와 텍스트를 잡아주는 짙은 그리너리 */
+            --text-dark: #3b4d42;      /* 눈이 편안한 톤다운된 밀리터리 그린 블랙 */
+            --text-muted: #82968a;     /* 은은한 서브 텍스트용 올리브 그레이 */
+            --bar-bg: #eaf3ee;         /* 게이지 바 배경용 소프트 그린 */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-text-size-adjust: none;
+        }
+
+        /* 투톤 현상 해결: 배경을 완전히 투명하게 하고 은은한 상단 그라데이션만 배치 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to bottom, rgba(226, 240, 237, 0.95) 0%, rgba(226, 240, 237, 0) 100%);
+            border-bottom: none;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            padding: 1.2rem 1rem 2.5rem 1rem; 
+            flex-wrap: wrap;
+        }
+
+        /* 투명한 배경 위에서도 버튼이 돋보이도록 크림색 배경과 테두리 적용 */
+        .navbar button {
+            background: var(--card-bg);
+            border: 2px solid var(--main-green);
+            color: var(--point-green);
+            font-size: 0.95rem;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 10px rgba(144, 184, 157, 0.15);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .navbar button.active {
+            background: var(--point-green);
+            color: #ffffff;
+            border-color: var(--point-green);
+        }
+
+        /* 메인 헤더 영역 */
+        header {
+            position: relative;
+            text-align: center;
+            padding: 8.5rem 1rem 1.5rem 1rem; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-container {
+            width: 105px;
+            height: 105px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid var(--main-green);
+            box-shadow: 0 6px 15px rgba(144, 184, 157, 0.2);
+            margin-bottom: 1rem;
+            background: #ffffff;
+        }
+
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        header h1 {
+            font-size: 2.3rem;
+            color: var(--point-green);
+            line-height: 1.2;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            margin-top: 0.5rem;
+            color: var(--text-muted);
+            font-weight: bold;
+            font-size: 1.05rem;
+        }
+
+        /* 콘텐츠 배치 전체 감싸는 영역 */
+        main {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2.5rem 1rem 3rem 1rem;
+            flex: 1;
+            position: relative;
+        }
+
+        /* 대시보드 구조 및 정렬 */
+        .dashboard-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        /* "snooze-wallpaper---pc.jpg"의 포근하고 깨끗한 감성을 살린 크림 네모 박스 */
+        .tab-panel {
+            display: none;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 24px rgba(103, 146, 117, 0.08);
+            border: 4px solid var(--main-green); 
+            position: relative;
+            z-index: 5;
+            animation: fadeInPanel 0.4s ease-in-out forwards;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeInPanel {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            color: var(--point-green);
+            margin-bottom: 1.5rem;
+            border-bottom: 2px dashed var(--main-green);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 날씨 섹션 파스텔 매칭 */
+        .weather-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3rem;
+            padding: 1.5rem 0;
+        }
+
+        .weather-icon {
+            font-size: 4.5rem;
+            color: var(--main-green);
+        }
+
+        .weather-info {
+            font-size: 1.1rem;
+        }
+
+        .weather-info .temp {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--point-green);
+            line-height: 1;
+            margin-bottom: 0.3rem;
+        }
+
+        /* 링크 리스트 스타일 */
+        .news-list { list-style: none; }
+        .news-item {
+            padding: 1.2rem 0;
+            border-bottom: 1px dashed var(--main-green);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        .news-item:last-child { border-bottom: none; }
+        .news-item a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-size: 1.05rem;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+        .news-item a:hover { color: var(--point-green); }
+        .news-date { color: var(--text-muted); font-size: 0.9rem; white-space: nowrap; }
+
+        /* 통계 지표 그리드 */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: #f4faf7;
+            padding: 1.5rem 1rem;
+            border-radius: 16px;
+            text-align: center;
+            border: 2px solid var(--main-green);
+        }
+
+        .stat-label { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: bold; }
+        .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--point-green); }
+        .stat-card small { display: block; margin-top: 0.4rem; color: var(--text-muted); font-size: 0.78rem; }
+
+        /* 푸른 들판을 품은 듯한 그린 그라데이션 차트 */
+        .chart-box {
+            background: #f4faf6;
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-top: 1.2rem;
+            border: 2px solid var(--main-green);
+        }
+        .chart-box-title {
+            font-size: 1rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--point-green);
+            border-left: 4px solid var(--main-green);
+            padding-left: 8px;
+        }
+        .bar-item { margin-bottom: 1rem; }
+        .bar-item:last-child { margin-bottom: 0; }
+        .bar-label { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.3rem; font-weight: bold; color: var(--text-dark); }
+        .bar-bg { background: var(--bar-bg); height: 14px; border-radius: 7px; overflow: hidden; }
+        
+        .bar-fill { background: linear-gradient(90deg, #b3d9c1, #90b89d); height: 100%; border-radius: 7px; width: 0%; transition: width 0.8s ease-out; }
+        .bar-fill.accent { background: linear-gradient(90deg, #90b89d, #679275); }
+
+        /* 고양이 포토존 프레임 */
+        .cat-container { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+        .cat-img-wrapper {
+            width: 100%; max-width: 500px; height: 320px;
+            border-radius: 16px; overflow: hidden;
+            border: 3px solid var(--main-green);
+            background: #ffffff; display: flex; align-items: center; justify-content: center;
+        }
+        .cat-img { width: 100%; height: 100%; object-fit: cover; }
+        .cat-btn {
+            background: var(--point-green); color: white; border: none; padding: 0.75rem 1.8rem;
+            border-radius: 25px; font-size: 1rem; font-weight: bold; cursor: pointer;
+            transition: opacity 0.2s; box-shadow: 0 4px 10px rgba(103, 146, 117, 0.2);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .cat-btn:hover { opacity: 0.9; }
+
+        .source-footer { margin-top: 1.5rem; font-size: 0.75rem; color: var(--text-muted); text-align: right; line-height: 1.4; }
+
+        footer {
+            text-align: center; padding: 2rem; font-size: 0.85rem; color: var(--text-muted);
+            background: rgba(226, 240, 237, 0.6); border-top: 2px solid var(--main-green); font-weight: bold;
+        }
+
+        /* 모바일 최적화 레이아웃 */
+        @media (max-width: 768px) {
+            .navbar { padding: 0.5rem 0.5rem 2rem 0.5rem; gap: 6px; }
+            .navbar button { font-size: 0.8rem; padding: 0.45rem 0.7rem; border-radius: 15px; }
+            header { padding: 10.5rem 1rem 1.5rem 1rem; }
+            header h1 { font-size: 1.8rem; }
+            .profile-container { width: 90px; height: 90px; border-width: 3px; }
+            
+            main { padding-top: 1.5rem; }
+
+            .tab-panel { padding: 1.5rem 1.1rem; border-width: 3px; }
+            h2 { font-size: 1.2rem; margin-bottom: 1.1rem; }
+            .weather-container { flex-direction: column; gap: 1rem; text-align: center; }
+            .weather-icon { font-size: 3.5rem; }
+            .weather-info .temp { font-size: 2.3rem; }
+            .news-item { flex-direction: column; align-items: flex-start; gap: 4px; padding: 1rem 0; }
+            .news-date { margin-top: 0.2rem; font-size: 0.8rem; }
+            .stat-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+            .stat-value { font-size: 1.4rem; }
+            .cat-img-wrapper { height: 230px; border-width: 2px; }
+            .source-footer { text-align: left; }
+        }
+
+        @media (max-width: 360px) {
+            .navbar button { font-size: 0.75rem; padding: 0.4rem 0.5rem; }
+            .stat-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 고정 메뉴바 -->
+    <div class="navbar">
+        <button class="nav-btn active" onclick="changeTab(0)">📰 종합 뉴스피드</button>
+        <button class="nav-btn" onclick="changeTab(1)">📊 사회복지 지표</button>
+        <button class="nav-btn" onclick="changeTab(2)">🐾 반려묘 현황</button>
+        <button class="nav-btn" onclick="changeTab(3)">🐱 힐링 야옹이</button>
+    </div>
+
+    <header>
+        <div class="profile-container">
+            <img src="증명사진.png" class="profile-img" alt="프로필 증명사진">
+        </div>
+        <h1>사회복지실무역량</h1>
+        <p>종합 정보 포트폴리오 대시보드</p>
+    </header>
+
+    <main>
+        <div class="dashboard-wrapper">
+
+            <!-- 화면 1: 종합 뉴스피드 -->
+            <div id="tab-panel-0" class="tab-panel active">
+                <h2><i class="fa-solid fa-cloud-sun-rain"></i> 부산광역시 남구 대연동 날씨</h2>
+                <div class="weather-container">
+                    <div class="weather-icon"><i class="fa-solid fa-cloud-sun"></i></div>
+                    <div class="weather-info">
+                        <div class="temp">21°C</div>
+                        <div>상태: 맑음 뒤 구름 조금 (실시간 연동 대기)</div>
+                        <div>습도: 55% | 풍속: 2.4m/s</div>
+                    </div>
+                </div>
+                <div class="source-footer">출처: 기상청 단기예보 Open API 기준</div>
+
+                <br><br>
+                <h2><i class="fa-solid fa-map-location-dot"></i> 부산 지역 주요 이슈</h2>
+                <ul class="news-list">
+                    <li class="news-item">
+                        <a href="https://www.busan.go.kr" target="_blank">부산시, 지역사회 통합돌봄(Community Care) 확대망 구축 선언</a>
+                        <span class="news-date">2026-05-28</span>
+                    </li>
+                    <li class="news-item">
+                        <a href="https://www.busan.go.kr" target="_blank">부산형 고령친화도시 'Aging in Place' 조성을 위한 인프라 확충 정책 발표</a>
+                        <span class="news-date">2026-05-15</span>
+                    </li>
+                    <li class="news-item">
+                        <a href="https://www.busan.go.kr" target="_blank">시민 안전 중심 교통망 혁신 및 구군별 복지 사각지대 발굴 시스템 강화</a>
+                        <span class="news-date">2026-04-30</span>
+                    </li>
+                </ul>
+
+                <br><br>
+                <h2><i class="fa-solid fa-graduation-cap"></i> 국립부경대학교 주요 소식</h2>
+                <ul class="news-list">
+                    <li class="news-item">
+                        <a href="https://www.pknu.ac.kr" target="_blank">국립부경대, 지역사회 상생을 위한 사회 welfare 글로컬 봉사단 발대식 개최</a>
+                        <span class="news-date">2026-05-22</span>
+                    </li>
+                    <li class="news-item">
+                        <a href="https://www.pknu.ac.kr" target="_blank">2026학년도 하반기 해외 자매대학 파견 교환학생 모집 및 설명회 성료</a>
+                        <span class="news-date">2026-05-10</span>
+                    </li>
+                    <li class="news-item">
+                        <a href="https://www.pknu.ac.kr" target="_blank">사회과학대학 학술 심포지엄: 현대 사회정책 변화와 실무 역량 강화 방안</a>
+                        <span class="news-date">2026-04-18</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 화면 2: 사회복지 지표 -->
+            <div id="tab-panel-1" class="tab-panel">
+                <h2><i class="fa-solid fa-chart-bar"></i> 핵심 사회복지 통계 지표</h2>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">부산 고령인구 비율</div>
+                        <div class="stat-value">23.4%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">사회복지 예산 비중</div>
+                        <div class="stat-value">36.2%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">통합돌봄 만족도</div>
+                        <div class="stat-value">87.5%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">상병수당 참여 목표</div>
+                        <div class="stat-value">72.0%</div>
+                    </div>
+                </div>
+                <div class="source-footer">출처: 통계청 국가통계포털(KOSIS) 및 보건복지부 참조</div>
+            </div>
+
+            <!-- 화면 3: 반려묘 현황 -->
+            <div id="tab-panel-2" class="tab-panel">
+                <h2><i class="fa-solid fa-cat"></i> 2025 한국 반려묘(고양이) 양육 통계</h2>
+                
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">국내 총 반려묘 수</div>
+                        <div class="stat-value">217만 마리</div>
+                        <small>독립적 성향 선호로 지속 증가</small>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">반려묘 다두가구 비율</div>
+                        <div class="stat-value">37.2%</div>
+                        <small>평균 1.51마리 양육 기록</small>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">반려묘 가구 월 양육비</div>
+                        <div class="stat-value">18만 3천원</div>
+                        <small>식비 및 모래 필수 지출</small>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">페르시안 고양이 비만율</div>
+                        <div class="stat-value">70.0%</div>
+                        <small>수의사 진단 기준 품종 1위</small>
+                    </div>
+                </div>
+
+                <!-- 품종 통계 차트 -->
+                <div class="chart-box">
+                    <div class="chart-box-title">가장 많이 기르는 반려묘 품종 Top 3 (%)</div>
+                    <div class="bar-item">
+                        <div class="bar-label"><span>1위 코리안 숏헤어</span><span>44.7%</span></div>
+                        <div class="bar-bg"><div class="bar-fill" data-width="44.7%"></div></div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label"><span>2위 러시안 BLUE</span><span>12.8%</span></div>
+                        <div class="bar-bg"><div class="bar-fill" data-width="12.8%"></div></div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label"><span>3위 페르시안</span><span>9.6%</span></div>
+                        <div class="bar-bg"><div class="bar-fill" data-width="9.6%"></div></div>
+                    </div>
+                </div>
+
+                <!-- 케어 방식 차트 -->
+                <div class="chart-box">
+                    <div class="chart-box-title">고양이 보호자의 주요 나홀로 외출 대응 조치 (%)</div>
+                    <div class="bar-item">
+                        <div class="bar-label"><span>1위 조명 또는 TV 켜두기</span><span>41.5%</span></div>
+                        <div class="bar-bg"><div class="bar-fill accent" data-width="41.5%"></div></div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label"><span>2위 자동 급식기/급수기 배치</span><span>38.2%</span></div>
+                        <div class="bar-bg"><div class="bar-fill accent" data-width="38.2%"></div></div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label"><span>3위 냉난방기 원격 제어 가동</span><span>32.0%</span></div>
+                        <div class="bar-bg"><div class="bar-fill accent" data-width="32.0%"></div></div>
+                    </div>
+                </div>
+
+                <!-- 병원비 차트 -->
+                <div class="chart-box">
+                    <div class="chart-box-title">반려묘 주요 다빈도 동물병원 치료비 지출 사유 (%)</div>
+                    <div class="bar-item">
+                        <div class="bar-label"><span>1위 정기 검진 및 장비 정밀 검사</span><span>43.9%</span></div>
+                        <div class="bar-bg"><div class="bar-fill" data-width="43.9%"></div></div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label"><span>2위 소화기 계통 질환 치료</span><span>21.7%</span></div>
+                        <div class="bar-bg"><div class="bar-fill" data-width="21.7%"></div></div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label"><span>3위 구강/치과 질환 치료</span><span>18.5%</span></div>
+                        <div class="bar-bg"><div class="bar-fill" data-width="18.5%"></div></div>
+                    </div>
+                </div>
+                
+                <div class="source-footer">출처: KB금융그룹 경영연구소 「2025 한국 반려동물 보고서」 공식 데이터</div>
+            </div>
+
+            <!-- 화면 4: 힐링 고양이 -->
+            <div id="tab-panel-3" class="tab-panel">
+                <h2><i class="fa-solid fa-cat"></i> 오늘의 힐링 랜덤 고양이</h2>
+                <div class="cat-container">
+                    <div class="cat-img-wrapper" id="cat-box">
+                        <i class="fa-solid fa-paw" style="font-size: 3rem; color: var(--main-green);"></i>
+                    </div>
+                    <button class="cat-btn" onclick="fetchCat()">새로운 야옹이 불러오기 🐾</button>
+                </div>
+                <div class="source-footer">출처: The Cat API</div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 사회복지실무역량 강화 프로젝트. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        function changeTab(panelIndex) {
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            buttons[panelIndex].classList.add('active');
+
+            const panels = document.querySelectorAll('.tab-panel');
+            panels.forEach(panel => panel.classList.remove('active'));
+            panels[panelIndex].classList.add('active');
+
+            if (panelIndex === 2) {
+                setTimeout(animateGraphs, 150);
+            } else {
+                resetGraphs();
+            }
+        }
+
+        function animateGraphs() {
+            const fills = document.querySelectorAll('.bar-fill');
+            fills.forEach(fill => {
+                const targetWidth = fill.getAttribute('data-width');
+                fill.style.width = targetWidth;
+            });
+        }
+
+        function resetGraphs() {
+            const fills = document.querySelectorAll('.bar-fill');
+            fills.forEach(fill => {
+                fill.style.width = '0%';
+            });
+        }
+
+        async function fetchCat() {
+            const catBox = document.getElementById('cat-box');
+            catBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin" style="font-size: 3rem; color: var(--point-green);"></i>`;
+            
+            try {
+                const response = await fetch('https://api.thecatapi.com/v1/images/search');
+                if (!response.ok) throw new Error('데이터 처리 지연');
+                
+                const data = await response.json();
+                const imgUrl = data[0].url;
+                
+                catBox.innerHTML = `<img src="${imgUrl}" class="cat-img" alt="귀여운 고양이 사진">`;
+            } catch (error) {
+                catBox.innerHTML = `
+                    <div style="text-align: center; padding: 1.5rem; color: var(--text-muted);">
+                        <i class="fa-solid fa-circle-exclamation" style="font-size: 2.2rem; margin-bottom: 0.6rem; color: var(--main-green); display:block;"></i>
+                        <p style="font-weight: bold;">고양이를 불러오지 못했습니다.</p>
+                    </div>`;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchCat();
+        });
+    </script>
+</body>
+</html>
