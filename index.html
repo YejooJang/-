@@ -207,10 +207,10 @@
         .news-item a:hover { color: var(--point-green); }
         .news-date { color: var(--text-muted); font-size: 0.9rem; white-space: nowrap; }
 
-        /* 통계 지표 그리드 */
+        /* 통계 지표 그리드 - 언제나 가로 2개씩 균형있게 배치 */
         .stat-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 1.2rem;
             margin-bottom: 1.5rem;
         }
@@ -278,7 +278,7 @@
         /* 모바일 최적화 레이아웃 */
         @media (max-width: 768px) {
             .navbar { padding: 0.5rem 0.5rem 2rem 0.5rem; gap: 6px; }
-            .navbar button { font-size: 0.8rem; padding: 0.45rem 0.7 skill; border-radius: 15px; }
+            .navbar button { font-size: 0.8rem; padding: 0.45rem 0.7rem; border-radius: 15px; }
             header { padding: 10.5rem 1rem 1.5rem 1rem; }
             header h1 { font-size: 1.8rem; }
             .profile-container { width: 90px; height: 90px; border-width: 3px; }
@@ -292,7 +292,6 @@
             .weather-info .temp { font-size: 2.3rem; }
             .news-item { flex-direction: column; align-items: flex-start; gap: 4px; padding: 1rem 0; }
             .news-date { margin-top: 0.2rem; font-size: 0.8rem; }
-            .stat-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
             .stat-value { font-size: 1.4rem; }
             .cat-img-wrapper { height: 230px; border-width: 2px; }
             .source-footer { text-align: left; }
@@ -300,7 +299,7 @@
 
         @media (max-width: 360px) {
             .navbar button { font-size: 0.75rem; padding: 0.4rem 0.5rem; }
-            .stat-grid { grid-template-columns: 1fr; }
+            .stat-grid { grid-template-columns: 1fr; } /* 화면이 너무 좁은 폰만 1열로 변경 */
         }
     </style>
 </head>
@@ -506,7 +505,7 @@
             panels.forEach(panel => panel.classList.remove('active'));
             panels[panelIndex].classList.add('active');
 
-            if (panelIndex === 2) {
+            if (panelIndex === 1 || panelIndex === 2) {
                 setTimeout(animateGraphs, 150);
             } else {
                 resetGraphs();
